@@ -4,7 +4,6 @@
 import awswrangler as wr
 from pandas import DataFrame, to_datetime
 from singer_sdk.sinks import BatchSink
-
 from target_s3_parquet.data_type_generator import generate_column_schema
 from datetime import datetime
 
@@ -22,14 +21,16 @@ class S3ParquetSink(BatchSink):
         # ------
         # client.upload(context["file_path"])  # Upload file
         # Path(context["file_path"]).unlink()  # Delete local copy
-
+        self.logger.debug("Executing process batch...")
         df = DataFrame(context["records"])
+        self.logger.debug(f"Transform context to dataframe {df.dtypes}")
 
         df["_sdc_started_at"] = to_datetime(STARTED_AT)
 
         dtype = generate_column_schema(
             self.schema["properties"], only_string=self.config.get("stringify_schema")
         )
+        self.logger.debug(f"Check schema of columns {dtype}")
 
         if self.config.get("stringify_schema"):
             df = df.astype(str)
