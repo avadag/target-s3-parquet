@@ -27,9 +27,13 @@ class S3ParquetSink(BatchSink):
 
         df["_sdc_started_at"] = STARTED_AT.timestamp()
 
+        self.logger.info(f'Schema Properties {self.schema["properties"]}')
+        return None
         dtype = generate_column_schema(
             self.schema["properties"], only_string=self.config.get("stringify_schema")
         )
+
+
 
         if self.config.get("stringify_schema"):
             df = df.astype(str)
