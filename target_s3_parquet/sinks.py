@@ -25,16 +25,16 @@ class S3ParquetSink(BatchSink):
 
         df = DataFrame(context["records"])
 
-        df["_sdc_started_at"] = STARTED_AT.timestamp()
+        # df["_sdc_started_at"] = STARTED_AT.timestamp()
 
-        dtype = generate_column_schema(
-            self.schema["properties"], only_string=self.config.get("stringify_schema")
-        )
+        # dtype = generate_column_schema(
+        #     self.schema["properties"], only_string=self.config.get("stringify_schema")
+        # )
 
-        if self.config.get("stringify_schema"):
-            df = df.astype(str)
+        # if self.config.get("stringify_schema"):
+        #     df = df.astype(str)
 
-        self.logger.debug(f"DType Definition: {dtype}")
+        # self.logger.debug(f"DType Definition: {dtype}")
 
         full_path = f"{self.config.get('s3_path')}/{self.config.get('athena_database')}/{self.stream_name}"
 
@@ -47,9 +47,7 @@ class S3ParquetSink(BatchSink):
             database=self.config.get("athena_database"),
             table=self.stream_name,
             mode="append",
-            partition_cols=["_sdc_started_at"],
             schema_evolution=True,
-            dtype=dtype,
         )
 
         self.logger.info(f"Uploaded {len(context['records'])}")
